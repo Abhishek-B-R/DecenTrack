@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 contract WebsiteMonitor {
-    enum WebsiteStatus { Good, Bad }
+    enum WebsiteStatus { Good, Bad, Unknown }
 
     struct WebsiteTick {
         address validator;
@@ -31,8 +31,8 @@ contract WebsiteMonitor {
     event WebsiteCreated(bytes32 indexed websiteId, address indexed owner);
     event WebsiteDeleted(bytes32 indexed websiteId, address indexed owner);
     event TickAdded(bytes32 indexed websiteId, address indexed validator);
+    event Payout(address indexed validator, uint256 amount);
 
-    // Generate a unique ID (off-chain you'd hash the URL or use UUID)
     function _generateId(string memory _url, address _user) internal pure returns (bytes32) {
         return keccak256(abi.encodePacked(_url, _user));
     }
@@ -41,15 +41,18 @@ contract WebsiteMonitor {
         bytes32 websiteId = _generateId(_url, msg.sender);
         Website storage w = websites[websiteId];
 
-        require(bytes(w.url).length == 0, "Already exists");
+        if (bytes(w.url).length != 0) {
+            require(w.disabled == true, "Already exists");
+            w.disabled = false;
+            w.owner = msg.sender;
+            return websiteId;
+        }
 
-        Website storage newWebsite = websites[websiteId];
-        newWebsite.url = _url;
-        newWebsite.owner = msg.sender;
-        newWebsite.disabled = false;
+        w.url = _url;
+        w.owner = msg.sender;
+        w.disabled = false;
 
         userWebsiteIds[msg.sender].push(websiteId);
-
         emit WebsiteCreated(websiteId, msg.sender);
         return websiteId;
     }
@@ -62,11 +65,28 @@ contract WebsiteMonitor {
     ) {
         Website storage w = websites[websiteId];
         require(w.owner == msg.sender, "Not authorized");
+        require(!w.disabled, "Website is disabled");
         return (w.url, w.owner, w.disabled, w.ticks);
     }
 
-    function getMyWebsites() external view returns (bytes32[] memory ids) {
-        return userWebsiteIds[msg.sender];
+    function getMyWebsites() external view returns (bytes32[] memory) {
+        bytes32[] storage allIds = userWebsiteIds[msg.sender];
+        uint256 activeCount;
+        for (uint256 i = 0; i < allIds.length; i++) {
+            if (!websites[allIds[i]].disabled) {
+                activeCount++;
+            }
+        }
+
+        bytes32[] memory result = new bytes32[](activeCount);
+        uint256 index = 0;
+        for (uint256 i = 0; i < allIds.length; i++) {
+            if (!websites[allIds[i]].disabled) {
+                result[index++] = allIds[i];
+            }
+        }
+
+        return result;
     }
 
     function deleteWebsite(bytes32 websiteId) external {
@@ -77,9 +97,11 @@ contract WebsiteMonitor {
     }
 
     function registerValidator(string memory _publicKey, string memory _location) external {
-        Validator storage v = validators[msg.sender];
-        v.publicKey = _publicKey;
-        v.location = _location;
+        validators[msg.sender] = Validator({
+            publicKey: _publicKey,
+            location: _location,
+            pendingPayouts: 0
+        });
     }
 
     function addTick(
@@ -88,16 +110,67 @@ contract WebsiteMonitor {
         uint256 latency
     ) external {
         require(bytes(websites[websiteId].url).length != 0, "Website doesn't exist");
+        require(!websites[websiteId].disabled, "Website is disabled");
 
-        Website storage w = websites[websiteId];
-        WebsiteTick memory tick = WebsiteTick({
+        websites[websiteId].ticks.push(WebsiteTick({
             validator: msg.sender,
             createdAt: block.timestamp,
             status: status,
             latency: latency
-        });
+        }));
 
-        w.ticks.push(tick);
+        validators[msg.sender].pendingPayouts += 100; // Cost per validation in lamports
         emit TickAdded(websiteId, msg.sender);
     }
+
+    function getAllWebsites() external view returns (Website[] memory) {
+        uint256 count;
+        for (uint256 i = 0; i < userWebsiteIds[msg.sender].length; i++) {
+            bytes32 id = userWebsiteIds[msg.sender][i];
+            if (!websites[id].disabled) {
+                count++;
+            }
+        }
+
+        Website[] memory result = new Website[](count);
+        uint256 j = 0;
+        for (uint256 i = 0; i < userWebsiteIds[msg.sender].length; i++) {
+            bytes32 id = userWebsiteIds[msg.sender][i];
+            if (!websites[id].disabled) {
+                result[j++] = websites[id];
+            }
+        }
+        return result;
+    }
+
+    function getWebsiteTicks(bytes32 websiteId) external view returns (WebsiteTick[] memory) {
+        return websites[websiteId].ticks;
+    }
+
+    function getRecentTicks(bytes32 websiteId, uint256 n) external view returns (WebsiteTick[] memory) {
+        WebsiteTick[] storage allTicks = websites[websiteId].ticks;
+        uint256 total = allTicks.length;
+        uint256 count = n > total ? total : n;
+
+        WebsiteTick[] memory recent = new WebsiteTick[](count);
+        for (uint256 i = 0; i < count; i++) {
+            recent[i] = allTicks[total - count + i];
+        }
+
+        return recent;
+    }
+
+    function getMyPayouts() external {
+        uint256 payout = validators[msg.sender].pendingPayouts;
+        require(payout > 0, "No payouts");
+        validators[msg.sender].pendingPayouts = 0;
+        payable(msg.sender).transfer(payout);
+        emit Payout(msg.sender, payout);
+    }
+
+    function myPendingPayout() external view returns (uint256) {
+        return validators[msg.sender].pendingPayouts;
+    }
+
+    receive() external payable {}
 }
