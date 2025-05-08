@@ -1,9 +1,32 @@
+"use client"
 import { Button } from "@/components/ui/button"
+import { MonitorContext } from "../Context/MonitoringContext";
+import { useContext, useRef } from "react";
 
 export default function ListerPage() {
+  const websiteUrlRef = useRef<HTMLInputElement>(null)
+  const context = useContext(MonitorContext);
+  console.log(context)
+  if (!context) return <div>Loading or context not found</div>;
+
+  const {
+    // currentUser,
+    // connectWallet,
+    createWebsite,
+    // addTick,
+    // getAllWebsites,
+    // deleteWebsite,
+    // registerValidator,
+    // getWebsite,
+    // getRecentTicks,
+    // getWebsiteTicks,
+    // getMyWebsites,
+    // myPendingPayout,
+    // getMyPayouts
+  } = context;
+
   return (
     <div className="flex min-h-screen flex-col px-30">
-
       <main className="flex-1">
         <section className="container py-12 md:py-24 lg:py-32">
           <div className="mx-auto max-w-3xl space-y-8">
@@ -15,13 +38,14 @@ export default function ListerPage() {
             </div>
 
             <div className="rounded-lg border bg-card p-8 shadow-sm">
-              <p className="mb-8 text-center text-muted-foreground">
-                This is a placeholder for the website registration form. Here you would add your website details and
-                submit them to the blockchain.
-              </p>
-              <div className="flex justify-center">
-                <Button size="lg">Connect Wallet to Continue</Button>
-              </div>
+              <input type="text" placeholder="website url" className="w-[85%] h-10 border-2" ref={websiteUrlRef}/>
+              <Button className="h-10 m-2" onClick={()=>{
+                if(!websiteUrlRef.current?.value) {
+                  alert("empty url")
+                  return
+                }
+                createWebsite(websiteUrlRef.current?.value)
+              }}>Submit</Button>
             </div>
           </div>
         </section>

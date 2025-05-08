@@ -1,7 +1,7 @@
 //npx hardhat compile
 //npx hardhat run scripts/deploy.js --network holesky
 // Inside `npx hardhat console --network holesky`
-const contractAddress = "0xc5dFf6496D8a5Bf733C0c0408FbC7A16df951fd4";
+const contractAddress = "0x081c3Aab6BDA63AB61bf52d656d05e78D23D449f";
 const WebsiteMonitor = await ethers.getContractAt("WebsiteMonitor", contractAddress);
 
 // Register a validator

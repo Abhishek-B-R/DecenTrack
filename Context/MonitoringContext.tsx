@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import Web3Modal from "web3modal";
-import { BrowserProvider, Contract } from "ethers";
+import { BrowserProvider, Contract,TransactionResponse } from "ethers";
 
 // INTERNAL IMPORT
 import tracking from "../artifacts/contracts/WebsiteMonitor.sol/WebsiteMonitor.json";
 
-const ContractAddress = "0xc5dFf6496D8a5Bf733C0c0408FbC7A16df951fd4";
+const ContractAddress = "0x081c3Aab6BDA63AB61bf52d656d05e78D23D449f";
 const ContractABI = tracking.abi;
 
 // Types
 export interface MonitorContextType {
   currentUser: string;
   connectWallet: () => Promise<string | void>;
-  createWebsite: (url: string) => Promise<void>;
-  addTick: (websiteId: number, status: boolean, latency: number) => Promise<void>;
+  createWebsite: (url: string) => Promise<TransactionResponse>;
+  addTick: (websiteId: string, status: boolean, latency: number) => Promise<void>;
   getAllWebsites: () => Promise<any>;
-  deleteWebsite: (websiteId: number) => Promise<void>;
+  deleteWebsite: (websiteId: string) => Promise<void>;
   registerValidator: (publicKey: string, location: string) => Promise<void>;
-  getWebsite: (websiteId: number) => Promise<any>;
-  getRecentTicks: (websiteId: number, n?: number) => Promise<any>;
-  getWebsiteTicks: (websiteId: number) => Promise<any>;
+  getWebsite: (websiteId: string) => Promise<any>;
+  getRecentTicks: (websiteId: string, n?: number) => Promise<any>;
+  getWebsiteTicks: (websiteId: string) => Promise<any>;
   getMyWebsites: () => Promise<any>;
   myPendingPayout: () => Promise<any>;
   getMyPayouts: () => Promise<void>;
@@ -60,15 +60,16 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
       const tx = await contract.createWebsite(url);
       await tx.wait();
       console.log("Website created:", tx);
+      return tx
     } catch (error) {
       console.error("Failed to create website:", error);
     }
   };
 
-  const addTick = async (websiteId: number, status: boolean, latency: number) => {
+  const addTick = async (websiteId: string, status: boolean, latency: number) => {
     try {
       const contract = await connectContract();
-      const tx = await contract.addTick(websiteId, status, latency);
+      const tx = await contract.addTick(websiteId, status?0:1, latency);
       await tx.wait();
       console.log("Tick added:", tx);
     } catch (error) {
@@ -79,45 +80,14 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
   const getAllWebsites = async () => {
     try {
       const contract = await connectContract();
-      
-      // Debug the raw call data
-      const callData = contract.interface.encodeFunctionData("getAllWebsites");
-      console.log("Call data:", callData);
-      
-      // Make a low-level call
-      const provider = new BrowserProvider(window.ethereum);
-      const rawResult = await provider.call({
-        to: ContractAddress,
-        data: callData
-      });
-      console.log("Raw result:", rawResult);
-      
-      // Try to decode manually
-      if (rawResult === "0x") {
-        throw new Error("Contract returned empty data (likely reverted)");
-      }
-      
-      try {
-        const decoded = contract.interface.decodeFunctionResult("getAllWebsites", rawResult);
-        console.log("Decoded result:", decoded);
-        return decoded;
-      } catch (decodeError) {
-        console.error("Decoding failed:", decodeError);
-        throw new Error("ABI doesn't match contract implementation");
-      }
-      
+      return await contract.getAllWebsites();
     } catch (error) {
-      console.error("Full error details:", {
-        message: error.message,
-        data: error.data,
-        stack: error.stack
-      });
-      throw error;
+      console.error("Failed to get my websites:", error);
     }
   };
   
 
-  const deleteWebsite = async (websiteId: number) => {
+  const deleteWebsite = async (websiteId: string) => {
     try {
       const contract = await connectContract();
       const tx = await contract.deleteWebsite(websiteId);
@@ -139,7 +109,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const getWebsite = async (websiteId: number) => {
+  const getWebsite = async (websiteId: string) => {
     try {
       const contract = await connectContract();
       return await contract.getWebsite(websiteId);
@@ -148,7 +118,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const getRecentTicks = async (websiteId: number, n: number = 10) => {
+  const getRecentTicks = async (websiteId: string, n: number = 10) => {
     try {
       const contract = await connectContract();
       return await contract.getRecentTicks(websiteId, n);
@@ -157,7 +127,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const getWebsiteTicks = async (websiteId: number) => {
+  const getWebsiteTicks = async (websiteId: string) => {
     try {
       const contract = await connectContract();
       return await contract.getWebsiteTicks(websiteId);

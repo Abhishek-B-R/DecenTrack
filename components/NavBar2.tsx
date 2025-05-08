@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react"
 
 export default function NavbarInsider() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background">
+    <header className="sticky top-0 z-40 w-full border-b px-30 bg-background">
         <div className="container flex h-16 items-center justify-between px-20 py-4">
         <Link href="/" className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />

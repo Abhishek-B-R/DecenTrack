@@ -64,8 +64,7 @@ contract WebsiteMonitor {
         WebsiteTick[] memory ticks
     ) {
         Website storage w = websites[websiteId];
-        require(w.owner == msg.sender, "Not authorized");
-        require(!w.disabled, "Website is disabled");
+        require(bytes(w.url).length != 0, "Not found");
         return (w.url, w.owner, w.disabled, w.ticks);
     }
 
@@ -119,20 +118,21 @@ contract WebsiteMonitor {
             latency: latency
         }));
 
-        validators[msg.sender].pendingPayouts += 100; // Cost per validation in lamports
+        validators[msg.sender].pendingPayouts += 100;
         emit TickAdded(websiteId, msg.sender);
     }
 
     function getAllWebsites() external view returns (Website[] memory) {
-        uint256 count;
+        // Returns all active websites (public)
+        uint256 totalCount;
         for (uint256 i = 0; i < userWebsiteIds[msg.sender].length; i++) {
             bytes32 id = userWebsiteIds[msg.sender][i];
             if (!websites[id].disabled) {
-                count++;
+                totalCount++;
             }
         }
 
-        Website[] memory result = new Website[](count);
+        Website[] memory result = new Website[](totalCount);
         uint256 j = 0;
         for (uint256 i = 0; i < userWebsiteIds[msg.sender].length; i++) {
             bytes32 id = userWebsiteIds[msg.sender][i];
