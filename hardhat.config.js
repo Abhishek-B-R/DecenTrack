@@ -15,6 +15,16 @@ const config = {
       url: "https://holesky.infura.io/v3/" + process.env.INFURA_KEY,
       accounts: [process.env.PRIVATE_KEY.startsWith("0x") ? process.env.PRIVATE_KEY
         : "0x" + process.env.PRIVATE_KEY]
+    },
+    sepolia: {
+      url: "https://sepolia.infura.io/v3/" + process.env.INFURA_KEY,
+      accounts: [process.env.PRIVATE_KEY.startsWith("0x") ? process.env.PRIVATE_KEY
+        : "0x" + process.env.PRIVATE_KEY]
+    },
+    hoodi: {
+      url: "https://hoodi.infura.io/v3/" + process.env.INFURA_KEY,
+      accounts: [process.env.PRIVATE_KEY.startsWith("0x") ? process.env.PRIVATE_KEY
+        : "0x" + process.env.PRIVATE_KEY]
     }
   }
 };

@@ -1,7 +1,11 @@
-export default function Home() {
-  return (
-    <div>
+import Navbar from "@/components/Navbar";
+import LandingPage from "@/pages/Landing";
 
-    </div>
-  );
-}
+export default async function page() {
+  return (
+    <>
+      <Navbar/>
+      <LandingPage/>
+    </>
+  )
+};

@@ -1,7 +1,7 @@
 //npx hardhat compile
 //npx hardhat run scripts/deploy.js --network holesky
 // Inside `npx hardhat console --network holesky`
-const contractAddress = "0x35E5161Ec2beC997ed02B677CAF4d11a7C74724f";
+const contractAddress = "0xc5dFf6496D8a5Bf733C0c0408FbC7A16df951fd4";
 const WebsiteMonitor = await ethers.getContractAt("WebsiteMonitor", contractAddress);
 
 // Register a validator
@@ -9,7 +9,7 @@ await WebsiteMonitor.registerValidator("0x1aB98C06b3FaB72a124E34d39aaCfe7F5a6094
 console.log("Validator registered.");
 
 // Create a website
-const tx = await WebsiteMonitor.createWebsite("https://google.com");
+const tx = await WebsiteMonitor.createWebsite("https://googler.com");
 const receipt = await tx.wait();
 
 // Parse logs for website id
@@ -20,7 +20,7 @@ console.log("Website ID:", websiteId);
 
 
 // Add a tick (0 = Good, 1 = Bad, 2 = Unknown)
-await WebsiteMonitor.addTick(websiteId, 0, 120); // status = Good, latency = 120ms
+await WebsiteMonitor.addTick(mySites[2], 1, 120); // status = Good, latency = 120ms
 console.log("Tick added.");
 
 // Get your websites
@@ -28,7 +28,7 @@ const mySites = await WebsiteMonitor.getMyWebsites();
 console.log("Your websites:", mySites);
 
 // Get full website details
-const data = await WebsiteMonitor.getWebsite(mySites[0]);
+const data = await WebsiteMonitor.getWebsite(mySites[2]);
 
 console.log("URL:", data[0]);
 console.log("Owner:", data[1]);
@@ -36,7 +36,7 @@ console.log("Disabled:", data[2]);
 
 console.log("Ticks:");
 data[3].forEach(tick => {
-  console.log(`- Validator: ${tick[0]}, Time: ${tick[1]}, Status: ${tick[2]}, Latency: ${tick[3]}`);
+  console.log(`- Validator: ${tick[0]}, Time: ${tick[1]}, Status: ${tick[2]==0?"Good":"Bad"}, Latency: ${tick[3]}`);
 });
 
 // Delete a website
