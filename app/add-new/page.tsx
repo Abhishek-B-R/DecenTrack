@@ -1,12 +1,13 @@
-import MonitorWrapper from "@/components/MonitorWrapper";
+import Footer from "@/components/Footer";
 import NavbarInsider from "@/components/NavBar2";
-import ListerPage from "@/pages/Listor";
+import ListerPage from "@/pages/AddNew";
 
 export default function validator() {
   return (
-    <MonitorWrapper>
+    <>
       <NavbarInsider/>
       <ListerPage/>
-    </MonitorWrapper>
+      <Footer/>
+    </>
   )
 };

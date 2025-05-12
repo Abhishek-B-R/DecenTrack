@@ -4,6 +4,7 @@ import {
 } from '@clerk/nextjs'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import MonitorWrapper from '@/components/MonitorWrapper'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -27,11 +28,13 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
+      <MonitorWrapper>
       <html lang="en" className='dark'>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased max-w-screen`}>
           {children}
         </body>
       </html>
+      </MonitorWrapper>
     </ClerkProvider>
   )
 }

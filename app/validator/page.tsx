@@ -1,11 +1,13 @@
-import NavbarInsider from "@/components/NavBar2";
+import Footer from "@/components/Footer";
+import ValidatorNavbar from "@/components/validator-navbar";
 import ValidatorPage from "@/pages/Validator";
 
 export default function validator() {
   return (
-    <>
-      <NavbarInsider/>
+    <div className="md:ml-40">
+      <ValidatorNavbar />
       <ValidatorPage/>
-    </>
+      <Footer/>
+    </div>
   )
 };

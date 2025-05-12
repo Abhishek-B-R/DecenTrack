@@ -1,15 +1,24 @@
 //npx hardhat compile
 //npx hardhat run scripts/deploy.js --network holesky
 // Inside `npx hardhat console --network holesky`
-const contractAddress = "0x081c3Aab6BDA63AB61bf52d656d05e78D23D449f";
+const contractAddress = "0x2D9555AD9A674A77ebc01FeC389C02F7bFAea9CD";
 const WebsiteMonitor = await ethers.getContractAt("WebsiteMonitor", contractAddress);
 
 // Register a validator
 await WebsiteMonitor.registerValidator("0x1aB98C06b3FaB72a124E34d39aaCfe7F5a6094De", "Hubli");
 console.log("Validator registered.");
 
+// check if validator is authenticated or not
+const isRegistered = await WebsiteMonitor.isValidatorAuthenticated("0x1aB98C06b3FaB72a124E34d39aaCfe7F5a6094De");
+console.log("Is validator authenticated?", isRegistered);
+
+// get all the validator details
+const validatorDetails=await WebsiteMonitor.getValidator('0x1aB98C06b3FaB72a124E34d39aaCfe7F5a6094De')
+validatorDetails[2]=validatorDetails[2]/100000000000000000n
+console.log(validatorDetails)
+
 // Create a website
-const tx = await WebsiteMonitor.createWebsite("https://googler.com");
+const tx = await WebsiteMonitor.createWebsite("https://googler.com","abhishekbr989@gmail.com");
 const receipt = await tx.wait();
 
 // Parse logs for website id
@@ -20,7 +29,7 @@ console.log("Website ID:", websiteId);
 
 
 // Add a tick (0 = Good, 1 = Bad, 2 = Unknown)
-await WebsiteMonitor.addTick(mySites[2], 1, 120); // status = Good, latency = 120ms
+await WebsiteMonitor.addTick(mySites[0], 1, 120); // status = Good, latency = 120ms
 console.log("Tick added.");
 
 // Get your websites
@@ -28,7 +37,7 @@ const mySites = await WebsiteMonitor.getMyWebsites();
 console.log("Your websites:", mySites);
 
 // Get full website details
-const data = await WebsiteMonitor.getWebsite(mySites[2]);
+const data = await WebsiteMonitor.getWebsite(mySites[0]);
 
 console.log("URL:", data[0]);
 console.log("Owner:", data[1]);
@@ -44,8 +53,17 @@ await WebsiteMonitor.deleteWebsite(websiteId);
 console.log("Website deleted.");
 
 //Get all websites registered till now
-const websites = await WebsiteMonitor.getAllWebsites();
-console.log(websites)
+const [websiteIds, websiteDetails] = await WebsiteMonitor.getAllWebsites();
+websiteIds.forEach((id, i) => {
+  const site = websiteDetails[i];
+  console.log(`ID: ${id}`);
+  console.log(`  URL: ${site.url}`);
+  console.log(`  Contact: ${site.contactInfo}`);
+  console.log(`  Owner: ${site.owner}`);
+  console.log(`  Disabled: ${site.disabled}`);
+  console.log(`  Balance: ${ethers.formatEther(site.currentBalance)} ETH`);
+});
+
 
 //Get all the website ticks for particular website
 const ticks = await WebsiteMonitor.getWebsiteTicks(mySites[0]);
@@ -57,7 +75,7 @@ ticks.forEach(tick => {
 const n = 5;
 const recentTicks = await WebsiteMonitor.getRecentTicks(mySites[0], n);
 recentTicks.forEach(tick => {
-  console.log(`Validator: ${tick.validator}, Time: ${tick.createdAt}, Status: ${tick.status}, Latency: ${tick.latency}`);
+  console.log(`Validator: ${tick.validator}, Time: ${tick.createdAt}, Status: ${tick.status}, Latency: ${tick.latency}, Location: ${tick.location}`);
 });
 
 //Pay pending payouts to validator
@@ -95,3 +113,12 @@ await signer.sendTransaction({
 import { ethers } from "ethers";
 const isValid = ethers.utils.isAddress("0x123...");
 console.log("Valid address:", isValid);
+
+// add balance to website
+const amountInEth = "0.01"; // Change as needed
+await WebsiteMonitor.addWebsiteBalance(websiteId, { value: ethers.parseEther(amountInEth) });
+console.log(`Added ${amountInEth} ETH to website balance.`);
+
+// get balance of the website
+const websiteBalance = await WebsiteMonitor.getWebsiteBalance(websiteId);
+console.log(`Website Balance: ${ethers.formatEther(websiteBalance)} ETH`);

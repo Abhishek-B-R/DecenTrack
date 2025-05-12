@@ -7,7 +7,7 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 xl:pl-46">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 pt-10 md:pl-30 lg:pl-46">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_500px]">
               <div className="flex flex-col justify-center space-y-4">
@@ -21,9 +21,15 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link href="/lister">
+                  <Link href="/add-new">
                     <Button size="lg" className="w-full min-[400px]:w-auto dark:bg-violet-700">
                       Add Your Website
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Link href="/websites">
+                    <Button size="lg" className="w-full min-[400px]:w-auto bg-gray-800 dark:bg-violet-300">
+                      Monitor Your Websites
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
@@ -52,7 +58,7 @@ export default function LandingPage() {
         </section>
 
         {/* How It Works Section */}
-        <section className="w-full bg-muted/50 py-12 md:py-24 lg:py-32 xl:pl-40">
+        <section className="w-full bg-muted/50 py-12 md:py-24 md:pl-20 lg:pl-14 xl:pl-30 2xl:pl-40">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -72,9 +78,15 @@ export default function LandingPage() {
                   Add your websites to our decentralized monitoring network. Get reliable uptime data verified by
                   multiple independent validators.
                 </p>
-                <Link href="/lister" className="w-full">
+                <Link href="/add-new" className="w-full">
                   <Button className="w-full dark:bg-violet-700">
                     Add Your Website
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/websites" className="w-full">
+                  <Button className="w-full dark:bg-violet-700">
+                    Monitor Your Websites
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
@@ -89,7 +101,7 @@ export default function LandingPage() {
                   for correct assessments.
                 </p>
                 <Link href="/validator" className="w-full">
-                  <Button className="w-full dark:bg-violet-700">
+                  <Button className="w-full dark:bg-violet-700 mt-5">
                     Start Validating
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -167,16 +179,21 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Link href="/lister">
+                <Link href="/add-new">
                   <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto">
                     Add Your Website
+                  </Button>
+                </Link>
+                <Link href="/add-new">
+                  <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto">
+                    Monitor Your Websites
                   </Button>
                 </Link>
                 <Link href="/validator">
                   <Button
                     size="lg"
-                    variant="outline"
-                    className="w-full min-[400px]:w-auto bg-slate-900 border-primary-foreground text-primary-foreground hover:bg-slate-700 hover:text-white"
+                    variant="secondary"
+                    className="w-full min-[400px]:w-auto border-primary-foreground text-black dark:text-white hover:bg-slate-700 hover:text-white"
                   >
                     Validate & Earn ETH
                   </Button>
@@ -186,26 +203,6 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-
-      <footer className="w-full border-t bg-background py-6 md:py-0">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-primary" />
-            <p className="text-sm text-muted-foreground">© 2025 DecenTrack. All rights reserved.</p>
-          </div>
-          <div className="flex gap-4">
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-              Terms
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-              Privacy
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary">
-              Docs
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
