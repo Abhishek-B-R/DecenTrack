@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 
 export default function SignInOut() {
     return (
-        <div>
+        <div className='mt-1'>
             <SignedOut>
                 <Button asChild><SignInButton /></Button>
                 <Button asChild variant={"secondary"}><SignUpButton /></Button>

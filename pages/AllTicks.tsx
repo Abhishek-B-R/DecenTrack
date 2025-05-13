@@ -5,22 +5,8 @@ import { useContext, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ArrowDownAZ, ArrowUpAZ, SortDesc } from "lucide-react"
-
-interface Website {
-  id: string
-  name: string
-  url?: string
-  disabled?: string
-  ticks?: Tick[]
-}
-
-interface Tick {
-  validator: string
-  createdAt: string
-  status: number
-  latency?: number
-  location: string
-}
+import Website from "@/interfaces/Website"
+import Tick from "@/interfaces/Tick"
 
 export default function AllTicks() {
   const params = useParams()
@@ -55,7 +41,23 @@ export default function AllTicks() {
 
       // Fetch ticks data
       const ticksData = await getWebsiteTicks(websiteId as string)
-      setTicks(ticksData || [])
+      const tickDataModified=ticksData.map((e: { createdAt: string; validator: string; status: number; latency: number; location:string })=>{
+        let ts
+        try {
+          const raw = typeof e.createdAt === "bigint" ? Number(e.createdAt) : e.createdAt
+          ts = typeof raw === "number" ? raw : Number.parseInt(raw)
+        } catch {
+          ts = e.createdAt
+        }
+        return {
+          id: e.validator,
+          timestamp: ts,
+          status: e.status,
+          latency: e.latency,
+          location:e.location
+        }
+      })
+      setTicks(tickDataModified || [])
     } catch (error) {
       console.error("Error fetching data:", error)
     } finally {
@@ -67,7 +69,7 @@ export default function AllTicks() {
   const parseTimestamp = (tick: Tick): number => {
     let ts
     try {
-      const raw = typeof tick.createdAt === "bigint" ? Number(tick.createdAt) : tick.createdAt
+      const raw = typeof tick.timestamp === "bigint" ? Number(tick.timestamp) : tick.timestamp
       ts = typeof raw === "number" ? raw : Number.parseInt(raw)
     } catch {
       ts = 0 // Default to 0 if parsing fails
@@ -101,14 +103,7 @@ export default function AllTicks() {
 
   // Format timestamp for display
   const formatTimestamp = (tick: Tick) => {
-    let ts
-    try {
-      const raw = typeof tick.createdAt === "bigint" ? Number(tick.createdAt) : tick.createdAt
-      ts = typeof raw === "number" ? raw : Number.parseInt(raw)
-    } catch {
-      ts = tick.createdAt
-    }
-    const date = new Date(Number(ts) * 1000)
+    const date = new Date(Number(tick) * 1000)
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`
   }
 
@@ -159,7 +154,7 @@ export default function AllTicks() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button variant="outline" className="flex items-center gap-2 cursor-pointer">
                 <SortDesc className="h-4 w-4" />
                 Sort by: {sortOrder === "latest" ? "Latest First" : "Oldest First"}
               </Button>
@@ -199,7 +194,7 @@ export default function AllTicks() {
             <tbody className="divide-y divide-gray-300 dark:divide-gray-700">
               {sortedTicks.map((tick, index) => (
                 <tr key={index} className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">{tick.validator}</td>
+                  <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">{tick.id}</td>
                   <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">{tick.location}</td>
                   <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">
                     <span

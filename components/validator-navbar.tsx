@@ -30,7 +30,8 @@ export default function ValidatorNavbar() {
     try {
       setIsLoading(true)
       setError(null)
-      const payout = await context.myPendingPayout()
+      const payoutTemp = await context.myPendingPayout()
+      const payout=payoutTemp.data
       setPendingPayout(payout)
     } catch (err) {
       setError(`Failed to fetch earnings: ${err instanceof Error ? err.message : String(err)}`)
@@ -59,7 +60,7 @@ export default function ValidatorNavbar() {
   return (
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 cursor-pointer">
             <ArrowLeft className="h-4 w-4" suppressHydrationWarning/>
             <span className="text-sm font-medium">Back to Home</span>
         </Link>
@@ -68,7 +69,7 @@ export default function ValidatorNavbar() {
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" onClick={handleCheckEarnings}>
-                <Coins className="mr-2 h-4 w-4" />
+                <Coins className="mr-2 h-4 w-4 cursor-pointer" />
                 Check Earnings
               </Button>
             </DialogTrigger>
@@ -109,7 +110,7 @@ export default function ValidatorNavbar() {
                       onClick={handleClaimRewards}
                       disabled={isLoading || !pendingPayout || pendingPayout === "0"}
                     >
-                      <CreditCard className="mr-2 h-4 w-4" />
+                      <CreditCard className="mr-2 h-4 w-4 cursor-pointer" />
                       Claim Rewards
                     </Button>
                   )}

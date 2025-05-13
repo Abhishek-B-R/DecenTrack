@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import DarkModeToggle from "@/components/DarkModeToggle"
 import SignInOut from "@/components/SignInOut"
 import { Shield } from "lucide-react"
+import Github from "./github.svg"
+import Image from "next/image"
 
 export default function Navbar() {
   return (
@@ -15,15 +17,21 @@ export default function Navbar() {
           <span className="text-xl font-bold">DecenTrack</span>
         </div>
         <nav className="flex items-center gap-4">
-          <Link href="/add-new" className="text-sm font-medium hover:text-primary sm:block hidden">
+          <Link href="/add-new" className="text-sm font-medium hover:text-primary sm:block hidden cursor-pointer">
             <Button variant={"outline"}>Add Website</Button>
           </Link>
-          <Link href="/websites" className="text-sm font-medium hover:text-primary sm:block hidden">
+          <Link href="/websites" className="text-sm font-medium hover:text-primary sm:block hidden cursor-pointer">
             <Button variant={"outline"}>Monitor Websites</Button>
           </Link>
-          <Link href="/validator" className="text-sm font-medium hover:text-primary sm:block hidden">
+          <Link href="/validator" className="text-sm font-medium hover:text-primary sm:block hidden cursor-pointer">
           <Button variant={"outline"}>Validate & Earn</Button>
           </Link>
+          <Button className="cursor-pointer bg-white hover:bg-gray-300" onClick={() => {
+              window.open('https://www.github.com/Abhishek-B-R/DecenTrack', '_blank', 'noopener,noreferrer');
+            }
+          }>
+            <Image src={Github} alt="GitHub" width={24} height={24} />
+          </Button>
           <DarkModeToggle/>
           <SignInOut/>
         </nav>

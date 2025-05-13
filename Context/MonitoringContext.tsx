@@ -7,7 +7,7 @@ import { BrowserProvider, Contract, parseEther } from "ethers";
 import tracking from "@/artifacts/contracts/WebsiteMonitor.sol/WebsiteMonitor.json";
 import { createWebsiteError, createWebsiteSuccess } from "./interfaces";
 
-const ContractAddress = "0x2D9555AD9A674A77ebc01FeC389C02F7bFAea9CD";
+import ContractAddress from "./contractAddress";
 const ContractABI = tracking.abi;
 
 // Types
@@ -82,7 +82,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
     try {
       const contract = await connectContract();
       const websites = await contract.getAllWebsites();
-      return { status: "Success", data: websites };
+      return websites
     } catch (error) {
       return { status: "Error", error };
     }
@@ -195,7 +195,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
   const addWebsiteBalance = async (websiteId: string, amount: string) => {
     try {
       const contract = await connectContract();
-      const tx = await contract.addWebsiteBalance(websiteId, { value: parseEther(amount) });
+      const tx = await contract.addWebsiteBalance(websiteId, { value: parseEther(amount).toString() });
       const receipt = await tx.wait();
       return { status: "Success", txHash: receipt.hash };
     } catch (error) {

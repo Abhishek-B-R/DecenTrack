@@ -63,18 +63,18 @@ export default function ValidatorPage() {
     if (!isRegistered || !context) return
     const validateWebsites = async () => {
       try {
-        const sites = await context.getAllWebsites()
+        const [allIds,sites] = await context.getAllWebsites()
+        setWebsiteIds(allIds)
         setWebsites(sites)
         // Validate each website
         for (let i=0;i<sites.length;i++) {
           const website=sites[i]
           try {
             // Check website status and measure latency
-            const { status, latency } = await checkWebsiteStatus(website.name)
+            const { status, latency } = await checkWebsiteStatus(website.url)
             // Call addTick with all three parameters
-            console.log(website[i])
-            console.log(websiteIds[i])
-            // await context.addTick(websiteIds[i], status, latency)
+
+            await context.addTick(websiteIds[i], status, latency)
             setSuccess(
               `Successfully validated ${website.url} (Status: ${status == 0 ? "Up" : "Down"}, Latency: ${latency}ms)`,
             )
@@ -105,6 +105,8 @@ export default function ValidatorPage() {
         clearTimeout(timeoutId)
 
         // Status 0 means website is up (HTTP 200)
+        console.log(url+" - "+response.status)
+        console.log(response)
         status = response.status == 200 ? 0 : 1
         console.log(fullUrl,response.status)
         console.log(status)
@@ -124,7 +126,8 @@ export default function ValidatorPage() {
     const intervalId = setInterval(validateWebsites, 300000)
     // Clean up interval on unmount
     return () => clearInterval(intervalId)
-  }, [isRegistered, context, websiteIds])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRegistered, context])
 
   // Clear alerts after 5 seconds
   useEffect(() => {

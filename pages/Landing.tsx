@@ -22,19 +22,19 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Link href="/add-new">
-                    <Button size="lg" className="w-full min-[400px]:w-auto dark:bg-violet-700">
+                    <Button size="lg" className="w-full min-[400px]:w-auto dark:bg-violet-700 cursor-pointer">
                       Add Your Website
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                   <Link href="/websites">
-                    <Button size="lg" className="w-full min-[400px]:w-auto bg-gray-800 dark:bg-violet-300">
+                    <Button size="lg" className="w-full min-[400px]:w-auto bg-gray-800 dark:bg-violet-300 cursor-pointer">
                       Monitor Your Websites
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                   <Link href="/validator">
-                    <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto">
+                    <Button size="lg" variant="outline" className="w-full min-[400px]:w-auto cursor-pointer">
                       Validate & Earn ETH
                     </Button>
                   </Link>
@@ -79,13 +79,13 @@ export default function LandingPage() {
                   multiple independent validators.
                 </p>
                 <Link href="/add-new" className="w-full">
-                  <Button className="w-full dark:bg-violet-700">
+                  <Button className="w-full dark:bg-violet-700 cursor-pointer">
                     Add Your Website
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/websites" className="w-full">
-                  <Button className="w-full dark:bg-violet-700">
+                  <Button className="w-full dark:bg-violet-700 cursor-pointer">
                     Monitor Your Websites
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -101,7 +101,7 @@ export default function LandingPage() {
                   for correct assessments.
                 </p>
                 <Link href="/validator" className="w-full">
-                  <Button className="w-full dark:bg-violet-700 mt-5">
+                  <Button className="w-full dark:bg-violet-700 mt-5 cursor-pointer">
                     Start Validating
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -180,12 +180,12 @@ export default function LandingPage() {
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Link href="/add-new">
-                  <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto">
+                  <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto cursor-pointer">
                     Add Your Website
                   </Button>
                 </Link>
                 <Link href="/add-new">
-                  <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto">
+                  <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto cursor-pointer">
                     Monitor Your Websites
                   </Button>
                 </Link>
@@ -193,7 +193,8 @@ export default function LandingPage() {
                   <Button
                     size="lg"
                     variant="secondary"
-                    className="w-full min-[400px]:w-auto border-primary-foreground text-black dark:text-white hover:bg-slate-700 hover:text-white"
+                    className="w-full min-[400px]:w-auto border-primary-foreground cursor-pointer
+                    text-black dark:text-white hover:bg-slate-700 hover:text-white"
                   >
                     Validate & Earn ETH
                   </Button>
