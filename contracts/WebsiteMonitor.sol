@@ -180,8 +180,9 @@ contract WebsiteMonitor {
 
             validators[msg.sender].pendingPayouts += 0.0001 ether;
             w.currentBalance -= 0.0001 ether;
+
+            emit TickAdded(tick.websiteId, msg.sender); // ✅ fix
         }
-        emit TickAdded(websiteId, msg.sender);
     }
 
     function getAllWebsites() external view returns (bytes32[] memory ids, Website[] memory details) {
