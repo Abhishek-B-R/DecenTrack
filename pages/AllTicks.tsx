@@ -36,11 +36,13 @@ export default function AllTicks() {
     setLoading(true)
     try {
       // Fetch website data
-      const websiteData = await getWebsite(websiteId as string)
+      const websiteDataTemp = await getWebsite(websiteId as string)
+      const websiteData=websiteDataTemp.data
       setWebsite(websiteData)
 
       // Fetch ticks data
-      const ticksData = await getWebsiteTicks(websiteId as string)
+      const ticksDataTemp = await getWebsiteTicks(websiteId as string)
+      const ticksData=ticksDataTemp.data
       const tickDataModified=ticksData.map((e: { createdAt: string; validator: string; status: number; latency: number; location:string })=>{
         let ts
         try {
@@ -103,7 +105,7 @@ export default function AllTicks() {
 
   // Format timestamp for display
   const formatTimestamp = (tick: Tick) => {
-    const date = new Date(Number(tick) * 1000)
+    const date = new Date(Number(tick.timestamp) * 1000)
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`
   }
 

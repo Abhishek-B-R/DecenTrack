@@ -1,25 +1,28 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { ethers } from "ethers";
-
 import { createRequire } from 'module';
+import dotenv from "dotenv"
+dotenv.config()
+if(!process.env.INFURA_KEY || !process.env.PRIVATE_KEY){
+  throw new Error("Env file not configured correctly")
+}
+
 const require = createRequire(import.meta.url);
 const tracking = require("../artifacts/contracts/WebsiteMonitor.sol/WebsiteMonitor.json");
 
-const wss = new WebSocketServer({ port: 8080 });
-
 // Setup provider (using Infura, Alchemy, or local node)
-const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/9e7169916c0a4ac1a4ae6f97cf122da4");
-
+const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/"+process.env.INFURA_KEY);
 // Verify connection on startup
 provider.getNetwork()
-  .then(network => console.log("Connected to network:", network.name))
-  .catch(err => console.error("Provider connection failed:", err));
+.then(network => console.log("Connected to network:", network.name))
+.catch(err => console.error("Provider connection failed:", err));
 
 // Setup contract instance
 import ContractAddress from "../Context/contractAddress.ts";
 const WebsiteMonitorABI=tracking.abi
-const WebsiteMonitor = new ethers.Contract(ContractAddress, WebsiteMonitorABI, provider);
+const WebsiteMonitor = new ethers.Contract(ContractAddress, WebsiteMonitorABI , provider);
 
+const wss = new WebSocketServer({ port: 8080 });
 let allSocket: WebSocket[] = [];
 
 wss.on("connection", (socket: WebSocket) => {
@@ -34,18 +37,30 @@ wss.on("connection", (socket: WebSocket) => {
   });
 });
 
+
+const tempWallet = new ethers.Wallet(process.env.PRIVATE_KEY+"", provider);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const WebsiteMonitorSigned = WebsiteMonitor.connect(tempWallet) as any;
+
 // Broadcast website data every 3 seconds
 setInterval(async () => {
   try {
-    const [websiteIds, websiteDetails] = await WebsiteMonitor.getAllWebsites();
+    const [websiteIds, websiteDetails] = await WebsiteMonitorSigned.getAllWebsites();
+    
+    const websiteDetailsUpdated = websiteDetails.map((e:[string,string,boolean,[],string]) => e[0]);
+    const finalData = websiteDetailsUpdated.map((url:string, i:number) => ({
+      id: websiteIds[i].toString(),
+      url
+    }));
 
-    console.log(websiteDetails)
-    console.log(websiteIds)
     const payload = JSON.stringify({
       type: "websiteUpdate",
-      data: websiteDetails
-    });
-
+      data:finalData
+    }, (_, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    );
+    console.log(payload)
+    
     allSocket.forEach((socket) => {
       if (socket.readyState === WebSocket.OPEN) {
         socket.send(payload);
@@ -54,4 +69,4 @@ setInterval(async () => {
   } catch (e) {
     console.error("Error fetching website data:", e);
   }
-}, 3000);
+}, 300_000);

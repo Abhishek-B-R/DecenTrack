@@ -19,7 +19,7 @@ export default function AllWebsites() {
   const [refreshing, setRefreshing] = useState(false)
 
   const sampleData = {
-    id: "asd",
+    id: "Undefined",
     timestamp: "asd",
     status: 2,
     location:"asd"

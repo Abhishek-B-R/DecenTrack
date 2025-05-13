@@ -157,9 +157,18 @@ contract WebsiteMonitor {
             TickInput calldata tick = ticks[i];
             Website storage w = websites[tick.websiteId];
             
-            require(bytes(w.url).length != 0, "Website doesn't exist");
-            require(!w.disabled, "Website is disabled");
-            require(w.currentBalance >= 0.0001 ether, "Insufficient balance");
+            // Skip if website doesn't exist
+            if (bytes(w.url).length == 0) {
+                continue;
+            }
+            // Skip if website is disabled
+            if (w.disabled) {
+                continue;
+            }
+            // Skip if website has insufficient balance
+            if (w.currentBalance < 0.0001 ether) {
+                continue;
+            }
 
             w.ticks.push(WebsiteTick({
                 validator: msg.sender,
@@ -168,7 +177,11 @@ contract WebsiteMonitor {
                 latency: tick.latency,
                 location: validators[msg.sender].location
             }));
+
+            validators[msg.sender].pendingPayouts += 0.0001 ether;
+            w.currentBalance -= 0.0001 ether;
         }
+        emit TickAdded(websiteId, msg.sender);
     }
 
     function getAllWebsites() external view returns (bytes32[] memory ids, Website[] memory details) {

@@ -10,12 +10,19 @@ import { createWebsiteError, createWebsiteSuccess } from "./interfaces";
 import ContractAddress from "./contractAddress";
 const ContractABI = tracking.abi;
 
+interface TickInput {
+  websiteId: string;
+  status: number;
+  latency: number;
+}
+
 // Types
 export interface MonitorContextType {
   currentUser: string;
   connectWallet: () => Promise<string | void>;
   createWebsite: (url: string, contactInfo: string) => Promise<createWebsiteSuccess | createWebsiteError>;
   addTick: (websiteId: string, status: number, latency: number) => Promise<any>;
+  addMultipleTicks: (ticks: TickInput[]) => Promise<any>;
   getAllWebsites: () => Promise<any>;
   deleteWebsite: (websiteId: string) => Promise<any>;
   registerValidator: (publicKey: string, location: string) => Promise<any>;
@@ -71,6 +78,17 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
     try {
       const contract = await connectContract();
       const tx = await contract.addTick(websiteId, status, latency);
+      const receipt = await tx.wait();
+      return { status: "Success", txHash: receipt.hash };
+    } catch (error) {
+      return { status: "Error", error };
+    }
+  };
+
+  const addMultipleTicks = async (ticks: TickInput[]) => {
+    try {
+      const contract = await connectContract();
+      const tx = await contract.addMultipleTicks(ticks);
       const receipt = await tx.wait();
       return { status: "Success", txHash: receipt.hash };
     } catch (error) {
@@ -220,6 +238,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
         connectWallet,
         createWebsite,
         addTick,
+        addMultipleTicks,
         getAllWebsites,
         deleteWebsite,
         registerValidator,
