@@ -185,7 +185,15 @@ contract WebsiteMonitor {
         }
     }
 
-    function getAllWebsites() external view returns (bytes32[] memory ids, Website[] memory details) {
+    struct WebsiteBasic {
+        string url;
+        address owner;
+        bool disabled;
+        string contactInfo;
+        uint256 currentBalance;
+    }
+
+    function getAllWebsites() external view returns (bytes32[] memory ids, WebsiteBasic[] memory details) {
         uint256 totalCount;
         bytes32[] storage allIds = userWebsiteIds[msg.sender];
         for (uint256 i = 0; i < allIds.length; i++) {
@@ -194,13 +202,20 @@ contract WebsiteMonitor {
             }
         }
 
-        Website[] memory result = new Website[](totalCount);
+        WebsiteBasic[] memory result = new WebsiteBasic[](totalCount);
         bytes32[] memory idResult = new bytes32[](totalCount);
         uint256 j = 0;
         for (uint256 i = 0; i < allIds.length; i++) {
             bytes32 id = allIds[i];
-            if (!websites[id].disabled) {
-                result[j] = websites[id];
+            Website storage w = websites[id];
+            if (!w.disabled) {
+                result[j] = WebsiteBasic({
+                    url: w.url,
+                    owner: w.owner,
+                    disabled: w.disabled,
+                    contactInfo: w.contactInfo,
+                    currentBalance: w.currentBalance
+                });
                 idResult[j] = id;
                 j++;
             }

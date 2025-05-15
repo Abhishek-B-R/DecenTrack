@@ -159,7 +159,7 @@ export const MonitorProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const getRecentTicks = async (websiteId: string, n = 5) => {
+  const getRecentTicks = async (websiteId: string, n = 10) => {
     try {
       const contract = await connectContract();
       const result = await contract.getRecentTicks(websiteId, n);

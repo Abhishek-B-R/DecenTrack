@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border: 2px solid #ff4d4f;
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(255, 77, 79, 0.4);
+        }
+        .header {
+            background-color: #ff4d4f;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+            color: #333;
+        }
+        .warning {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d8000c;
+            margin: 20px 0;
+        }
+        .website {
+            font-size: 18px;
+            color: #a8071a;
+            word-break: break-word;
+        }
+        .footer {
+            margin-top: 20px;
+            color: #888;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>⚠️ Website Downtime Alert</h1>
+        </div>
+        <div class="content">
+            <p>Hello,</p>
+            <p class="warning">Your website might be down!</p>
+            <p>Nearly 10 validators have reported an issue with:</p>
+            <p class="website">{{WEBSITE_URL}}</p>
+            <p>Please check your site immediately.</p>
+        </div>
+        <div class="footer">
+            If you believe this is a mistake, please disregard this alert.
+        </div>
+    </div>
+</body>
+</html>

@@ -155,7 +155,7 @@ export default function ListerPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/30 pl-40">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/30 lg:pl-40">
       <main className="flex-1">
         <section className="container py-12 md:py-24 lg:py-32">
           <div className="mx-auto max-w-3xl space-y-8">

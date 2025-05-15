@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fffef0;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border: 2px solid #faad14;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(250, 173, 20, 0.3);
+    }
+    .header {
+      background-color: #faad14;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+    }
+    .content {
+      padding: 20px;
+      text-align: center;
+      color: #333;
+    }
+    .warning {
+      font-size: 20px;
+      font-weight: bold;
+      color: #d48806;
+      margin: 20px 0;
+    }
+    .website {
+      font-size: 18px;
+      color: #ad6800;
+      word-break: break-word;
+    }
+    .balance {
+      font-size: 18px;
+      color: #fa541c;
+      margin: 10px 0;
+    }
+    .footer {
+      margin-top: 20px;
+      color: #888;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>⚠️ Low Website Balance</h1>
+    </div>
+    <div class="content">
+      <p>Hello,</p>
+      <p class="warning">Your website's balance is running low!</p>
+      <p>Website:</p>
+      <p class="website">{{WEBSITE_URL}}</p>
+      <p class="balance">Available Balance: <strong>{{BALANCE}}</strong></p>
+      <p>Websites with low balance will <strong>not be validated by validators</strong>.</p>
+      <p>Please top up your balance to continue receiving uptime checks.</p>
+    </div>
+    <div class="footer">
+      If you have already topped up, you may ignore this alert.
+    </div>
+  </div>
+</body>
+</html>

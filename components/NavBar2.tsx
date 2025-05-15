@@ -17,6 +17,12 @@ export default function NavbarInsider() {
             <span className="text-sm font-medium">Back to Home</span>
         </Link>
         <div className="flex gap-4">
+            <Link href="/add-new" className="text-sm font-medium hover:text-primary sm:block hidden">
+              <Button variant={"outline"} className="cursor-pointer">Add Website</Button>
+            </Link>
+            <Link href="/websites" className="text-sm font-medium hover:text-primary sm:block hidden">
+              <Button variant={"outline"} className="cursor-pointer">Monitor Websites</Button>
+            </Link>
             <Button className="cursor-pointer bg-white hover:bg-gray-300" onClick={() => {
                 window.open('https://www.github.com/Abhishek-B-R/DecenTrack', '_blank', 'noopener,noreferrer');
               }

@@ -14,17 +14,19 @@ export default function Navbar() {
       <div className="container flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-2">
           <Shield className="h-6 w-6 text-primary dark:text-violet-700" />
-          <span className="text-xl font-bold">DecenTrack</span>
+          <Link href="/" className="text-xl font-bold cursor-pointer">
+            DecenTrack
+          </Link>
         </div>
-        <nav className="flex items-center gap-4">
-          <Link href="/add-new" className="text-sm font-medium hover:text-primary sm:block hidden cursor-pointer">
-            <Button variant={"outline"}>Add Website</Button>
+        <nav className="flex items-center gap-2 md:gap-4">
+          <Link href="/add-new" className="text-sm font-medium hover:text-primary sm:block hidden">
+            <Button variant={"outline"} className="cursor-pointer">Add Website</Button>
           </Link>
-          <Link href="/websites" className="text-sm font-medium hover:text-primary sm:block hidden cursor-pointer">
-            <Button variant={"outline"}>Monitor Websites</Button>
+          <Link href="/websites" className="text-sm font-medium hover:text-primary sm:block hidden">
+            <Button variant={"outline"} className="cursor-pointer">Monitor Websites</Button>
           </Link>
-          <Link href="/validator" className="text-sm font-medium hover:text-primary sm:block hidden cursor-pointer">
-          <Button variant={"outline"}>Validate & Earn</Button>
+          <Link href="/validator" className="text-sm font-medium hover:text-primary sm:block hidden">
+          <Button variant={"outline"} className="cursor-pointer">Validate & Earn</Button>
           </Link>
           <Button className="cursor-pointer bg-white hover:bg-gray-300" onClick={() => {
               window.open('https://www.github.com/Abhishek-B-R/DecenTrack', '_blank', 'noopener,noreferrer');

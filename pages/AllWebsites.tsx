@@ -12,6 +12,7 @@ import { ethers } from "ethers"
 import DeleteWebsite from "@/components/DeleteWebsite"
 import Website from "@/interfaces/Website"
 import AddBalance from "@/components/AddBalance"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function AllWebsites() {
   const [websites, setWebsites] = useState<Website[]>([])
@@ -133,6 +134,12 @@ export default function AllWebsites() {
           <h1 className="text-2xl font-bold">Website Monitoring</h1>
           <Skeleton className="h-10 w-24" />
         </div>
+        <Alert>
+          <AlertTitle>Tips:</AlertTitle>
+          <AlertDescription>
+            If this loading doesn&apos;t stop, then make sure your metamask wallet has SepoliaETH as default network
+          </AlertDescription>
+        </Alert>
 
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} className="w-full">
@@ -165,6 +172,12 @@ export default function AllWebsites() {
             <CardTitle>No Websites Found</CardTitle>
             <CardDescription>You don&apos;t have any websites configured for monitoring.</CardDescription>
           </CardHeader>
+          <Alert>
+            <AlertTitle>Tips:</AlertTitle>
+            <AlertDescription>
+              If you had some websites,then make sure your metamask wallet has SepoliaETH network as default network
+            </AlertDescription>
+          </Alert>
         </Card>
       ) : (
         websites.map((website) => (

@@ -137,7 +137,7 @@ export default function AllTicks() {
     )
   }
   return (
-    <div className="min-h-screen p-20">
+    <div className="min-h-screen p-2 md:p-20">
       {website && (
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">Website Details</h1>
@@ -184,7 +184,7 @@ export default function AllTicks() {
           <table className="min-w-full dark:bg-slate-900 bg-slate-100 border border-gray-300 dark:border-gray-700 shadow-sm rounded-lg overflow-hidden">
             <thead className="dark:bg-gray-800 bg-gray-200">
               <tr>
-                <th className="py-3 px-4 text-left border-b border-r border-gray-300 dark:border-gray-700">Tick ID</th>
+                <th className="py-3 px-4 text-left border-b border-r border-gray-300 dark:border-gray-700 hidden lg:block">Tick ID</th>
                 <th className="py-3 px-4 text-left border-b border-r border-gray-300 dark:border-gray-700">Location</th>
                 <th className="py-3 px-4 text-left border-b border-r border-gray-300 dark:border-gray-700">Status</th>
                 <th className="py-3 px-4 text-left border-b border-r border-gray-300 dark:border-gray-700">
@@ -196,7 +196,7 @@ export default function AllTicks() {
             <tbody className="divide-y divide-gray-300 dark:divide-gray-700">
               {sortedTicks.map((tick, index) => (
                 <tr key={index} className="hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">{tick.id}</td>
+                  <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700 hidden lg:block">{tick.id}</td>
                   <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">{tick.location}</td>
                   <td className="py-3 px-4 border-r border-gray-300 dark:border-gray-700">
                     <span

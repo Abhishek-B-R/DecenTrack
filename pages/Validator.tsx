@@ -4,34 +4,43 @@ import { SignInButton, useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertCircle, CheckCircle2 } from "lucide-react"
+import { AlertCircle, CheckCircle2, Copy, ExternalLink } from "lucide-react"
 import { MonitorContext } from "@/Context/MonitoringContext"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Steps, Step } from "@/components/steps"
 
 export default function ValidatorPage() {
   const context = useContext(MonitorContext)
   const { user, isLoaded: isUserLoaded } = useUser()
-  const [websites, setWebsites] = useState<{ url: string; id:string; status?: number; latency?: number }[]>([])
   const [isRegistered, setIsRegistered] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [websiteIds,setWebsiteIds]=useState<string[]>([])
 
   useEffect(() => {
-    // Register validator when user is loaded
-    const registerValidatorFn = async () => {
+    const checkAndRegisterValidator = async () => {
       if (!context || !isUserLoaded || !user) return
+
       try {
         setIsLoading(true)
-        // Use the user's public address from Clerk
         const publicAddress = user.primaryWeb3Wallet?.web3Wallet || user.id
-        if(!(await context.isValidatorAuthenticated(publicAddress))){
-          await context.registerValidator(publicAddress,"hubli")
+        const isAuthenticated = await context.isValidatorAuthenticated(publicAddress)
+
+        if (!isAuthenticated) {
+          const location = prompt(
+            "To register as a validator, please enter your city or location. This helps us distribute validators geographically. We will not spam or store this info."
+          )
+
+          if (!location || location.trim() === "") {
+            setError("Location is required to register as a validator.")
+            return
+          }
+
+          await context.registerValidator(publicAddress, location.trim())
+          setSuccess("Successfully registered as a validator")
         }
+
         setIsRegistered(true)
-        setSuccess("Successfully registered as a validator")
-        // Fetch websites after registration
-        fetchWebsites()
       } catch (err) {
         setError(`Failed to register validator: ${err instanceof Error ? err.message : String(err)}`)
       } finally {
@@ -39,97 +48,9 @@ export default function ValidatorPage() {
       }
     }
 
-    registerValidatorFn()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    checkAndRegisterValidator()
   }, [context, isUserLoaded, user])
 
-  // Fetch all websites
-  const fetchWebsites = async () => {
-    if (!context) return
-    try {
-      setIsLoading(true)
-      const [allIds,sites] = await context.getAllWebsites()
-      setWebsiteIds(allIds)
-      setWebsites(sites)
-    } catch (err) {
-      setError(`Failed to fetch websites: ${err instanceof Error ? err.message : String(err)}`)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  // Set up interval to validate websites every 5 minutes
-  useEffect(() => {
-    if (!isRegistered || !context) return
-    const validateWebsites = async () => {
-      try {
-        const [allIds,sites] = await context.getAllWebsites()
-        setWebsiteIds(allIds)
-        setWebsites(sites)
-        // Validate each website
-        for (let i=0;i<sites.length;i++) {
-          const website=sites[i]
-          try {
-            // Check website status and measure latency
-            const { status, latency } = await checkWebsiteStatus(website.url)
-            // Call addTick with all three parameters
-
-            await context.addTick(websiteIds[i], status, latency)
-            setSuccess(
-              `Successfully validated ${website.url} (Status: ${status == 0 ? "Up" : "Down"}, Latency: ${latency}ms)`,
-            )
-          } catch (err) {
-            setError(`Failed to validate ${website.url}: ${err instanceof Error ? err.message : String(err)}`)
-          }
-        }
-      } catch (err) {
-        setError(`Failed to fetch websites: ${err instanceof Error ? err.message : String(err)}`)
-      }
-    }
-
-    // Function to check website status and measure latency
-    const checkWebsiteStatus = async (url: string): Promise<{ status: number; latency: number }> => {
-      const startTime = performance.now()
-      let status = 1 // Default to down (1)
-      try {
-        // Add protocol if missing
-        const fullUrl = url.startsWith("http") ? url : `https://${url}`
-        // Fetch with timeout
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
-        const response = await fetch(fullUrl, {
-          method: "GET",
-          signal: controller.signal,
-          mode: "no-cors", // To handle CORS issues
-        })
-        clearTimeout(timeoutId)
-
-        // Status 0 means website is up (HTTP 200)
-        console.log(url+" - "+response.status)
-        console.log(response)
-        status = response.status == 200 ? 0 : 1
-        console.log(fullUrl,response.status)
-        console.log(status)
-      } catch (error) {
-        // Any error means the website is down
-        status = 1
-        console.error(`Error checking ${url}:`, error)
-      } finally {
-        // Calculate latency
-        const latency = Math.round(performance.now() - startTime)
-        return { status, latency }
-      }
-    }
-    // Initial validation
-    validateWebsites()
-    // Set interval for every 5 minutes (300000 ms)
-    const intervalId = setInterval(validateWebsites, 300000)
-    // Clean up interval on unmount
-    return () => clearInterval(intervalId)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRegistered, context])
-
-  // Clear alerts after 5 seconds
   useEffect(() => {
     if (error || success) {
       const timer = setTimeout(() => {
@@ -139,6 +60,11 @@ export default function ValidatorPage() {
       return () => clearTimeout(timer)
     }
   }, [error, success])
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setSuccess("Copied to clipboard!")
+  }
 
   if (!context) {
     return (
@@ -175,63 +101,187 @@ export default function ValidatorPage() {
 
             <div className="space-y-2 text-center">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Validate & Earn ETH</h1>
-              <p className="text-muted-foreground md:text-xl">
-                Check website status and earn Ethereum rewards for correct validations
-              </p>
+              <p className="text-muted-foreground md:text-xl">Run our validator code and earn Ethereum rewards</p>
             </div>
 
-            <div className="rounded-lg border bg-card p-8 shadow-sm">
-              {isLoading ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-8 w-full" />
-                  <Skeleton className="h-20 w-full" />
-                  <Skeleton className="h-12 w-1/3 mx-auto" />
-                </div>
-              ) : !isUserLoaded ? (
-                <div className="text-center">
-                  <p className="mb-8 text-muted-foreground">
-                    Please sign in to start validating websites and earning ETH.
-                  </p>
-                  <Button size="lg" asChild><SignInButton/></Button>
-                </div>
-              ) : (
-                <>
-                  <h2 className="text-xl font-semibold mb-4">Active Websites for Validation</h2>
-                  {websites.length > 0 ? (
-                    <div className="space-y-4">
-                      {websites.map((website, index) => (
-                        <div key={index} className="p-4 border rounded-md">
-                          <p className="font-medium">{website.url}</p>
-                          <div className="flex justify-between mt-2">
-                            <p className="text-sm text-muted-foreground">
-                              Status:{" "}
-                              {website.status == 0 ? (
-                                <span className="text-green-600 font-medium">Online</span>
-                              ) : (
-                                <span className="text-red-600 font-medium">Offline</span>
-                              )}
-                            </p>
-                            {website.latency && (
-                              <p className="text-sm text-muted-foreground">
-                                Latency: <span className="font-medium">{website.latency}ms</span>
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                      <p className="mt-4 text-sm text-muted-foreground">
-                        Websites are automatically validated every 5 minutes. Your last validation was at{" "}
-                        {new Date().toLocaleTimeString()}.
+            {isLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-12 w-1/3 mx-auto" />
+                <Alert>
+                  <AlertTitle>Tips:</AlertTitle>
+                  <AlertDescription>
+                    <h1>If this loading doesn&apos;t stop then,</h1>
+                    <h2>Please SignIn if not done yet</h2>
+                    <h2>Make sure your metamask wallet has SepoliaETH as default network</h2>
+                  </AlertDescription>
+                </Alert>
+              </div>
+            ) : !isUserLoaded ? (
+              <Card>
+                <CardHeader className="text-center">
+                  <CardTitle>Sign In Required</CardTitle>
+                  <CardDescription>Please sign in to start validating websites and earning ETH.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                  <Button size="lg" asChild>
+                    <SignInButton />
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : isRegistered ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Validator Setup Instructions</CardTitle>
+                  <CardDescription>
+                    Follow these simple steps to set up and run the validator on your computer. The longer you keep it
+                    running, the more ETH you&apos;ll earn!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="bg-muted p-4 rounded-lg">
+                    <p className="font-medium text-green-600 mb-2">You&apos;re registered as a validator! 🎉</p>
+                    <p>Check the button in the navbar to track your ETH earnings at any time.</p>
+                  </div>
+
+                  <Steps>
+                    <Step title="Clone the Repository">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <code className="bg-muted p-2 rounded text-sm flex-1">
+                          git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git
+                        </code>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                          onClick={() =>
+                            copyToClipboard("git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git")
+                          }
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        This downloads the validator code to your computer. Open your terminal or command prompt and
+                        paste this command.
                       </p>
-                    </div>
-                  ) : (
-                    <p className="text-center text-muted-foreground">
-                      No websites available for validation at the moment. Check back later.
-                    </p>
-                  )}
-                </>
-              )}
-            </div>
+                    </Step>
+
+                    <Step title="Set Up Environment Variables">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <code className="bg-muted p-2 rounded text-sm flex-1">cp .env.example .env</code>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                          onClick={() => copyToClipboard("cp .env.example .env")}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        This creates your configuration file. Run this command inside the validator-repo folder.
+                      </p>
+                    </Step>
+
+                    <Step title="Install Dependencies">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <code className="bg-muted p-2 rounded text-sm flex-1">npm install</code>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                          onClick={() => copyToClipboard("npm install")}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        This installs all the necessary packages. This might take a few minutes.
+                      </p>
+                    </Step>
+
+                    <Step title="Start the Validator">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <code className="bg-muted p-2 rounded text-sm flex-1">npm run dev</code>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                          onClick={() => copyToClipboard("npm run dev")}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        This starts the validator. Keep this running to earn ETH!
+                      </p>
+                    </Step>
+                  </Steps>
+
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                    <h3 className="font-medium text-blue-800 mb-2">Important Notes:</h3>
+                    <ul className="list-disc pl-5 space-y-1 text-blue-700">
+                      <li>Your computer must stay on with the validator running to earn ETH</li>
+                      <li>The longer you keep the validator running, the more ETH you&apos;ll earn</li>
+                      <li>Check your earnings anytime using the tracking button in the navbar</li>
+                      <li>For technical support, please contact our team via Discord</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex justify-center">
+                    <Button className="w-full md:w-auto" asChild>
+                      <a
+                        href="https://github.com/Abhishek-B-R/DecenTrack-Validator"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        View Repository
+                      </a>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader className="text-center">
+                  <CardTitle>Registration Required</CardTitle>
+                  <CardDescription>We need to register you as a validator before you can proceed.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                  <Button
+                    size="lg"
+                    onClick={async () => {
+                      if (!context || !user) return
+                      try {
+                        setIsLoading(true)
+                        const publicAddress = user.primaryWeb3Wallet?.web3Wallet || user.id
+                        const location = prompt(
+                          "To register as a validator, please enter your city or location. This helps us distribute validators geographically. We will not spam or store this info."
+                        )
+
+                        if (!location || location.trim() === "") {
+                          setError("Location is required to register as a validator.")
+                          return
+                        }
+
+                        await context.registerValidator(publicAddress, location.trim())
+                        setIsRegistered(true)
+                        setSuccess("Successfully registered as a validator")
+                      } catch (err) {
+                        setError(`Failed to register: ${err instanceof Error ? err.message : String(err)}`)
+                      } finally {
+                        setIsLoading(false)
+                      }
+                    }}
+                  >
+                    Register as Validator
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </section>
       </main>

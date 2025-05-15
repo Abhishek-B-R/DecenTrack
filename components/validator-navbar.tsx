@@ -106,7 +106,7 @@ export default function ValidatorNavbar() {
                     </div>
                   ) : (
                     <Button
-                      className="w-full"
+                      className="w-full cursor-pointer"
                       onClick={handleClaimRewards}
                       disabled={isLoading || !pendingPayout || pendingPayout === "0"}
                     >
