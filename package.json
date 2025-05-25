@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verifier-build":"npx esbuild verifier/**/*.ts --outdir=verifier/dist --platform=node --format=esm --target=node18 --bundle",
-    "hub-build":"npx esbuild hub/index.ts --outdir=hub/dist --platform=node --format=esm --target=node18 --bundle"
+    "verifier-start":"pm2 start verifier/index.ts --interpreter=node --node-args='--import tsx'",
+    "hub-start":"pm2 start hub/index.ts --interpreter=node --node-args='--import tsx'"
   },
   "type": "module",
   "dependencies": {

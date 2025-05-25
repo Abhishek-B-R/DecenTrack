@@ -30,13 +30,12 @@ useEffect(() => {
       if (!isAuthenticated) {
         const location=await FetchLocation()
         if (!location || location.includes("Failed")) {
-          setError(location)
+          setError(location+" .Please fix this and reload the page.")
           return
         }
         await context.registerValidator(publicAddress, location.trim())
         setSuccess("Successfully registered as a validator")
       }
-
       setIsRegistered(true)
     } catch (err) {
       setError(`Failed to register validator: ${err instanceof Error ? err.message : String(err)}`)
