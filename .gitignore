@@ -11,6 +11,7 @@
 !.yarn/versions
 
 ./components/Temp.tsx
+./app/test/
 # testing
 /coverage
 

@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
-import ValidatorNavbar from "@/components/validator-navbar";
-import ValidatorWrapper from "@/pages/ValidatorWrapper";
+import ValidatorNavbar from "@/components/ValidatorNavbar";
+import ValidatorWrapper from "@/pages/Validator";
 
 export default function validator() {
   return (
