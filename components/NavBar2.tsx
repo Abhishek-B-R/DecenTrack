@@ -1,8 +1,12 @@
 "use client"
 
+import dynamic from "next/dynamic";
 import Link from "next/link"
 import DarkModeToggle from "@/components/DarkModeToggle"
-import SignInOut from "@/components/SignInOut"
+// import SignInOut from "@/components/SignInOut"
+const SignInOut = dynamic(() => import('@/components/SignInOut'), {
+  ssr: false,
+});
 import { ArrowLeft } from "lucide-react"
 import { Button } from "./ui/button"
 import Image from "next/image"

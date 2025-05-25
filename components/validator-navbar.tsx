@@ -32,7 +32,7 @@ export default function ValidatorNavbar() {
       setError(null)
       const payoutTemp = await context.myPendingPayout()
       const payout=payoutTemp.data
-      setPendingPayout(payout)
+      setPendingPayout((payout/Math.pow(10,18)).toString())
     } catch (err) {
       setError(`Failed to fetch earnings: ${err instanceof Error ? err.message : String(err)}`)
     } finally {
@@ -68,8 +68,8 @@ export default function ValidatorNavbar() {
         <div className="flex items-center gap-4">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" onClick={handleCheckEarnings}>
-                <Coins className="mr-2 h-4 w-4 cursor-pointer" />
+              <Button variant="outline" onClick={handleCheckEarnings} className="cursor-pointer">
+                <Coins className="mr-2 h-4 w-4" />
                 Check Earnings
               </Button>
             </DialogTrigger>

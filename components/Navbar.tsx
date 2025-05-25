@@ -1,9 +1,13 @@
 "use client"
 
+import dynamic from 'next/dynamic';
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import DarkModeToggle from "@/components/DarkModeToggle"
-import SignInOut from "@/components/SignInOut"
+// import SignInOut from "@/components/SignInOut"
+const SignInOut = dynamic(() => import('@/components/SignInOut'), {
+  ssr: false,
+});
 import { Shield } from "lucide-react"
 import Github from "./github.svg"
 import Image from "next/image"

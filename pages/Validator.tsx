@@ -150,13 +150,14 @@ export default function ValidatorPage() {
                       <div className="flex items-center space-x-2 mb-2">
                         <code className="bg-muted p-2 rounded text-sm flex-1">
                           git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git
+                          cd DecenTrack-Validator
                         </code>
                         <Button
                           variant="outline"
                           size="icon"
                           className="cursor-pointer"
                           onClick={() =>
-                            copyToClipboard("git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git")
+                            copyToClipboard("git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git \n cd DecenTrack-Validator")
                           }
                         >
                           <Copy className="h-4 w-4" />
@@ -165,23 +166,6 @@ export default function ValidatorPage() {
                       <p className="text-sm text-muted-foreground">
                         This downloads the validator code to your computer. Open your terminal or command prompt and
                         paste this command.
-                      </p>
-                    </Step>
-
-                    <Step title="Set Up Environment Variables">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <code className="bg-muted p-2 rounded text-sm flex-1">cp .env.example .env</code>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="cursor-pointer"
-                          onClick={() => copyToClipboard("cp .env.example .env")}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        This creates your configuration file. Run this command inside the validator-repo folder.
                       </p>
                     </Step>
 

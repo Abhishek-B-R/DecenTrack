@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useContext, useState } from "react";
 import { MonitorContext } from "@/Context/MonitoringContext";
@@ -7,6 +8,7 @@ export default function Index() {
   const context = useContext(MonitorContext);
   console.log("Context value:", context);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [temp, setTemp] = useState<any>();
 
   if (!context) return <div>Loading or context not found</div>;
@@ -59,8 +61,8 @@ export default function Index() {
       //     "status":1,
       //     "latency":200
       // }])
-      console.log("Data fetched:", getData); 
-      setTemp(getData);
+      // console.log("Data fetched:", getData); 
+      // setTemp(getData);
 
       // websiteIds.forEach((id, i) => {
       //   const site = websiteDetails[i];

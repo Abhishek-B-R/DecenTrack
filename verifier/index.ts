@@ -56,10 +56,10 @@ setInterval(async ()=>{
 
     websiteDetails.forEach((e)=>{
       // conversion is 1 => 10^18
-      if(e[5]<Math.pow(10,14)){
-        const contactInfo:string=e[4]
+      if(e[4]<Math.pow(10,14)){
+        const contactInfo:string=e[3]
         const allContacts=contactInfo.split(" ");
-        const balanceInStr=(e[5]/Math.pow(10,18)).toString()
+        const balanceInStr=(e[4]/BigInt(Math.pow(10,18))).toString()
         allContacts.forEach((contact:string)=>{
           if(contact.includes("@")){
             sendLowBalanceEmail(contact,e[0],balanceInStr)
