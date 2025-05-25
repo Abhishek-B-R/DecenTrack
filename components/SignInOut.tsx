@@ -1,6 +1,5 @@
 import {
     SignInButton,
-    SignUpButton,
     SignedIn,
     SignedOut,
     UserButton,
@@ -12,7 +11,6 @@ export default function SignInOut() {
         <div className='mt-1'>
             <SignedOut>
                 <Button asChild><SignInButton /></Button>
-                <Button asChild variant={"secondary"}><SignUpButton /></Button>
             </SignedOut>
             <SignedIn>
                 <UserButton />

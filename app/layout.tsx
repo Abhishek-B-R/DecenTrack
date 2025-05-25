@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <MonitorWrapper>
-      <html lang="en" className='dark'>
+      <html lang="en" className='dark' suppressHydrationWarning>
         <head>
           <link rel='icon' href={logoUrl}></link>
         </head>

@@ -184,7 +184,7 @@ export default function LandingPage() {
                     Add Your Website
                   </Button>
                 </Link>
-                <Link href="/add-new">
+                <Link href="/websites">
                   <Button size="lg" variant="secondary" className="w-full min-[400px]:w-auto cursor-pointer">
                     Monitor Your Websites
                   </Button>
