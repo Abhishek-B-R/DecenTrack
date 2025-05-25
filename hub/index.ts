@@ -59,7 +59,7 @@ setInterval(async () => {
     }, (_, value) =>
       typeof value === 'bigint' ? value.toString() : value
     );
-    console.log(payload)
+    // console.log(payload)
     
     allSocket.forEach((socket) => {
       if (socket.readyState === WebSocket.OPEN) {

@@ -58,7 +58,7 @@ export default function ValidatorNavbar() {
   }
 
   return (
-    <header className="border-b bg-background">
+    <header className="sticky top-0 z-40 border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 cursor-pointer">
             <ArrowLeft className="h-4 w-4" suppressHydrationWarning/>
