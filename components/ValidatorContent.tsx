@@ -8,6 +8,7 @@ import { AlertCircle, CheckCircle2, Copy, ExternalLink } from "lucide-react"
 import { MonitorContext } from "@/context/MonitoringContext"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Steps, Step } from "@/components/steps"
+import { FetchLocation } from "./getLocation"
 
 export default function ValidatorPage() {
   const context = useContext(MonitorContext)
@@ -17,39 +18,36 @@ export default function ValidatorPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  useEffect(() => {
-    const checkAndRegisterValidator = async () => {
-      if (!context || !isUserLoaded || !user) return
+useEffect(() => {
+  const checkAndRegisterValidator = async () => {
+    if (!context || !isUserLoaded || !user) return
 
-      try {
-        setIsLoading(true)
-        const publicAddress = user.primaryWeb3Wallet?.web3Wallet || user.id
-        const isAuthenticated = await context.isValidatorAuthenticated(publicAddress)
+    try {
+      setIsLoading(true)
+      const publicAddress = user.primaryWeb3Wallet?.web3Wallet || user.id
+      const isAuthenticated = await context.isValidatorAuthenticated(publicAddress)
 
-        if (!isAuthenticated) {
-          const location = prompt(
-            "To register as a validator, please enter your city or location. This helps us distribute validators geographically. We will not spam or store this info."
-          )
-
-          if (!location || location.trim() === "") {
-            setError("Location is required to register as a validator.")
-            return
-          }
-
-          await context.registerValidator(publicAddress, location.trim())
-          setSuccess("Successfully registered as a validator")
+      if (!isAuthenticated) {
+        const location=await FetchLocation()
+        if (!location || location.includes("Failed")) {
+          setError(location)
+          return
         }
-
-        setIsRegistered(true)
-      } catch (err) {
-        setError(`Failed to register validator: ${err instanceof Error ? err.message : String(err)}`)
-      } finally {
-        setIsLoading(false)
+        await context.registerValidator(publicAddress, location.trim())
+        setSuccess("Successfully registered as a validator")
       }
-    }
 
-    checkAndRegisterValidator()
-  }, [context, isUserLoaded, user])
+      setIsRegistered(true)
+    } catch (err) {
+      setError(`Failed to register validator: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  checkAndRegisterValidator()
+}, [context, isUserLoaded, user])
+
 
   useEffect(() => {
     if (error || success) {
@@ -149,7 +147,7 @@ export default function ValidatorPage() {
                     <Step title="Clone the Repository">
                       <div className="flex items-center space-x-2 mb-2">
                         <code className="bg-muted p-2 rounded text-sm flex-1">
-                          git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git
+                          <h4>git clone https://github.com/Abhishek-B-R/DecenTrack-Validator.git</h4>
                           cd DecenTrack-Validator
                         </code>
                         <Button

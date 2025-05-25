@@ -11,7 +11,8 @@
 !.yarn/versions
 
 ./components/Temp.tsx
-./app/test/
+app/test/
+app/test/page.tsx
 # testing
 /coverage
 
@@ -58,3 +59,5 @@ node_modules
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+verifier/dist/
+hub/dist/

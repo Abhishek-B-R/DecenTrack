@@ -7,7 +7,9 @@
     "startAll": "next dev & node verifier/index.ts & node hub/index.ts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verifier-build":"npx esbuild verifier/**/*.ts --outdir=verifier/dist --platform=node --format=esm --target=node18 --bundle",
+    "hub-build":"npx esbuild hub/index.ts --outdir=hub/dist --platform=node --format=esm --target=node18 --bundle"
   },
   "type": "module",
   "dependencies": {
