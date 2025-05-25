@@ -1,7 +1,7 @@
 "use client"
 import { useState, useContext } from "react"
 import { Button } from "@/components/ui/button"
-import { MonitorContext } from "@/Context/MonitoringContext"
+import { MonitorContext } from "@/context/MonitoringContext"
 import {
   Dialog,
   DialogContent,

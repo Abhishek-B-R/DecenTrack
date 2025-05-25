@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useContext, useState } from "react";
-import { MonitorContext } from "@/Context/MonitoringContext";
+import { MonitorContext } from "@/context/MonitoringContext";
 import {ethers} from 'ethers'
 
 export default function Index() {

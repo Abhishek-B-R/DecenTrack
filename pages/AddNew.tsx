@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button"
-import { MonitorContext } from "@/Context/MonitoringContext"
+import { MonitorContext } from "@/context/MonitoringContext"
 import { AlertCircle, ArrowRight, CheckCircle, Globe, Plus, Trash2 } from "lucide-react"
 import { useContext, useRef, useState } from "react"
 import { Input } from "@/components/ui/input"

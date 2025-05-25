@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "./ui/button"
 import { Plus } from "lucide-react"
 import { useContext, useState } from "react"
-import { MonitorContext } from "@/Context/MonitoringContext"
+import { MonitorContext } from "@/context/MonitoringContext"
 import Website from "@/interfaces/Website"
 import { Spinner } from "./ui/loading-spinner"
 

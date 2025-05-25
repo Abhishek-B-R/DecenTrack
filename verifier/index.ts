@@ -17,7 +17,7 @@ provider.getNetwork()
 .catch(err => console.error("Provider connection failed:", err));
 
 // Setup contract instance
-import ContractAddress from "../Context/contractAddress.ts";
+import ContractAddress from "../context/contractAddress.ts";
 import { sendLowBalanceEmail, sendWebsiteAlertEmail } from "./email.ts";
 import { sendLowBalanceSMS, sendWebsiteDownSMS } from "./sms.ts";
 const WebsiteMonitorABI=tracking.abi

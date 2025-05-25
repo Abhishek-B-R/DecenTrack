@@ -1,5 +1,5 @@
 "use client"
-import { MonitorContext } from "@/Context/MonitoringContext"
+import { MonitorContext } from "@/context/MonitoringContext"
 import { useParams } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"

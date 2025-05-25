@@ -18,7 +18,7 @@ provider.getNetwork()
 .catch(err => console.error("Provider connection failed:", err));
 
 // Setup contract instance
-import ContractAddress from "../Context/contractAddress.ts";
+import ContractAddress from "../context/contractAddress.ts";
 const WebsiteMonitorABI=tracking.abi
 const WebsiteMonitor = new ethers.Contract(ContractAddress, WebsiteMonitorABI , provider);
 
