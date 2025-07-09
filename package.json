@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verifier-start":"pm2 start verifier/index.ts --interpreter=node --node-args='--import tsx'",
-    "hub-start":"pm2 start hub/index.ts --interpreter=node --node-args='--import tsx'"
+    "verifier-start": "pm2 start verifier/index.ts --interpreter=node --node-args='--import tsx'",
+    "hub-start": "pm2 start hub/index.ts --interpreter=node --node-args='--import tsx'"
   },
   "type": "module",
   "dependencies": {
