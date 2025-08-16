@@ -1,14 +1,34 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import { MonitorContext } from "@/context/MonitoringContext"
-import { AlertCircle, ArrowRight, CheckCircle, Globe, Plus, Trash2 } from "lucide-react"
-import { useContext, useRef, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+"use client";
+import { Button } from "@/components/ui/button";
+import { MonitorContext } from "@/context/MonitoringContext";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle,
+  Globe,
+  Plus,
+  Trash2,
+} from "lucide-react";
+import { useContext, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 // Common country codes for phone numbers
 const countryCodes = [
@@ -27,132 +47,132 @@ const countryCodes = [
   { code: "+82", country: "South Korea" },
   { code: "+39", country: "Italy" },
   { code: "+34", country: "Spain" },
-]
+];
 
 export default function ListerPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const websiteUrlRef = useRef<HTMLInputElement>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
-  const phoneRef = useRef<HTMLInputElement>(null)
-  const [countryCode, setCountryCode] = useState("+91")
-  const [emails, setEmails] = useState<string[]>([])
-  const [phones, setPhones] = useState<string[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const websiteUrlRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const [countryCode, setCountryCode] = useState("+91");
+  const [emails, setEmails] = useState<string[]>([]);
+  const [phones, setPhones] = useState<string[]>([]);
 
-  const context = useContext(MonitorContext)
-  if (!context) return <div>Loading or context not found</div>
+  const context = useContext(MonitorContext);
+  if (!context) return <div>Loading or context not found</div>;
 
-  const { createWebsite } = context
+  const { createWebsite } = context;
 
   const addEmail = () => {
     if (!emailRef.current?.value) {
-      setError("Please enter an email address")
-      return
+      setError("Please enter an email address");
+      return;
     }
 
-    const email = emailRef.current.value
+    const email = emailRef.current.value;
     // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address")
-      return
+      setError("Please enter a valid email address");
+      return;
     }
 
-    setEmails([...emails, email])
-    emailRef.current.value = ""
-    setError(null)
-  }
+    setEmails([...emails, email]);
+    emailRef.current.value = "";
+    setError(null);
+  };
 
   const addPhone = () => {
     if (!phoneRef.current?.value) {
-      setError("Please enter a phone number")
-      return
+      setError("Please enter a phone number");
+      return;
     }
 
-    const phone = phoneRef.current.value
+    const phone = phoneRef.current.value;
     // Basic phone validation (numbers only)
-    const phoneRegex = /^\d+$/
+    const phoneRegex = /^\d+$/;
     if (!phoneRegex.test(phone)) {
-      setError("Phone number should contain only digits")
-      return
+      setError("Phone number should contain only digits");
+      return;
     }
 
-    setPhones([...phones, `${countryCode}${phone}`])
-    phoneRef.current.value = ""
-    setError(null)
-  }
+    setPhones([...phones, `${countryCode}${phone}`]);
+    phoneRef.current.value = "";
+    setError(null);
+  };
 
   const removeEmail = (index: number) => {
-    const newEmails = [...emails]
-    newEmails.splice(index, 1)
-    setEmails(newEmails)
-  }
+    const newEmails = [...emails];
+    newEmails.splice(index, 1);
+    setEmails(newEmails);
+  };
 
   const removePhone = (index: number) => {
-    const newPhones = [...phones]
-    newPhones.splice(index, 1)
-    setPhones(newPhones)
-  }
+    const newPhones = [...phones];
+    newPhones.splice(index, 1);
+    setPhones(newPhones);
+  };
 
   const createWebsiteFn = async (url: string) => {
     if (!url) {
-      setError("Please enter a website URL")
-      return
+      setError("Please enter a website URL");
+      return;
     }
 
     if (emails.length === 0 && phones.length === 0) {
-      setError("Please add at least one contact method (email or phone)")
-      return
+      setError("Please add at least one contact method (email or phone)");
+      return;
     }
 
-    setError(null)
-    setIsSubmitting(true)
+    setError(null);
+    setIsSubmitting(true);
 
     // Combine all contact information into a space-separated string
-    const contactInfo = [...emails, ...phones].join(" ")
+    const contactInfo = [...emails, ...phones].join(" ");
 
     try {
-      const resp = await createWebsite(url, contactInfo)
+      const resp = await createWebsite(url, contactInfo);
       if (resp.status === "Error") {
-        let errorMessage = "Failed to register website"
+        let errorMessage = "Failed to register website";
         if (typeof resp.response === "string") {
-          errorMessage = resp.response
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } else if ((resp.response as any)?.reason) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        errorMessage = (resp.response as any).reason
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } else if ((resp.response as any)?.message) {
+          errorMessage = resp.response;
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          errorMessage = (resp.response as any).message
+        } else if ((resp.response as any)?.reason) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          errorMessage = (resp.response as any).reason;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } else if ((resp.response as any)?.message) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          errorMessage = (resp.response as any).message;
         }
-        throw new Error(errorMessage)
+        throw new Error(errorMessage);
       }
-      setIsSuccess(true)
+      setIsSuccess(true);
       // Reset form
-      setEmails([])
-      setPhones([])
-      if (websiteUrlRef.current) websiteUrlRef.current.value = ""
-      setTimeout(() => setIsSuccess(false), 3000)
+      setEmails([]);
+      setPhones([]);
+      if (websiteUrlRef.current) websiteUrlRef.current.value = "";
+      setTimeout(() => setIsSuccess(false), 3000);
     } catch (err) {
-      console.error("Error registering website:", err)
-      let errorMessage = "An unexpected error occurred"
+      console.error("Error registering website:", err);
+      let errorMessage = "An unexpected error occurred";
       if (err instanceof Error) {
         if (err.message.includes("Already exists")) {
-          errorMessage = "This website is already registered"
+          errorMessage = "This website is already registered";
         } else if (err.message.includes("execution reverted")) {
-          errorMessage = err.message.split('"')[1] || "Transaction reverted"
+          errorMessage = err.message.split('"')[1] || "Transaction reverted";
         } else {
-          errorMessage = err.message.substring(0, 200)
-          if (err.message.length > 200) errorMessage += "..."
+          errorMessage = err.message.substring(0, 200);
+          if (err.message.length > 200) errorMessage += "...";
         }
       }
-      setError(errorMessage)
+      setError(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-muted/30 lg:pl-40">
@@ -161,18 +181,24 @@ export default function ListerPage() {
           <div className="mx-auto max-w-3xl space-y-8">
             <div className="space-y-4 text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Globe className="h-8 w-8 text-primary dark:text-violet-700" />
+                <Globe className="h-8 w-8 text-primary dark:text-cyan-700" />
               </div>
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Add Your Website</h1>
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                Add Your Website
+              </h1>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                Register your website for decentralized uptime monitoring and get notified when it goes down.
+                Register your website for decentralized uptime monitoring and
+                get notified when it goes down.
               </p>
             </div>
 
             <Card className="border-border/40 shadow-lg transition-all hover:shadow-xl">
               <CardHeader>
                 <CardTitle>Website Registration</CardTitle>
-                <CardDescription>Enter your website URL and contact information for monitoring alerts</CardDescription>
+                <CardDescription>
+                  Enter your website URL and contact information for monitoring
+                  alerts
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
@@ -180,9 +206,14 @@ export default function ListerPage() {
                   <div className="grid gap-2">
                     <Label htmlFor="website-url">Website URL</Label>
                     <div className="relative flex-1">
-                      <Input id="website-url" placeholder="https://example.com" ref={websiteUrlRef} className="pr-10" />
+                      <Input
+                        id="website-url"
+                        placeholder="https://example.com"
+                        ref={websiteUrlRef}
+                        className="pr-10"
+                      />
                       {isSuccess && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 transform">
+                        <div className="absolute right-3 top-1/2 -trancyan-y-1/2 transform">
                           <CheckCircle className="h-5 w-5 text-green-500" />
                         </div>
                       )}
@@ -192,16 +223,31 @@ export default function ListerPage() {
                   {/* Contact Information Section */}
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-lg font-medium">Contact Information</h3>
-                      <p className="text-sm text-muted-foreground">Add at least one contact method to receive alerts</p>
+                      <h3 className="text-lg font-medium">
+                        Contact Information
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Add at least one contact method to receive alerts
+                      </p>
                     </div>
 
                     {/* Email Input */}
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email Address</Label>
                       <div className="flex gap-2">
-                        <Input id="email" type="email" placeholder="you@example.com" ref={emailRef} />
-                        <Button type="button" onClick={addEmail} variant="outline" size="icon" className="cursor-pointer">
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="you@example.com"
+                          ref={emailRef}
+                        />
+                        <Button
+                          type="button"
+                          onClick={addEmail}
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                        >
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
@@ -211,7 +257,11 @@ export default function ListerPage() {
                     {emails.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {emails.map((email, index) => (
-                          <Badge key={`email-${index}`} variant="secondary" className="flex items-center gap-1">
+                          <Badge
+                            key={`email-${index}`}
+                            variant="secondary"
+                            className="flex items-center gap-1"
+                          >
                             {email}
                             <button
                               onClick={() => removeEmail(index)}
@@ -230,21 +280,39 @@ export default function ListerPage() {
                       <Label htmlFor="phone">Phone Number</Label>
                       <div className="flex gap-2">
                         <div className="flex w-full gap-2">
-                          <Select value={countryCode} onValueChange={setCountryCode}>
+                          <Select
+                            value={countryCode}
+                            onValueChange={setCountryCode}
+                          >
                             <SelectTrigger className="w-[100px]">
                               <SelectValue placeholder="Code" />
                             </SelectTrigger>
                             <SelectContent>
                               {countryCodes.map((country) => (
-                                <SelectItem key={country.code} value={country.code}>
+                                <SelectItem
+                                  key={country.code}
+                                  value={country.code}
+                                >
                                   {country.code} ({country.country})
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
-                          <Input id="phone" type="tel" placeholder="1234567890" ref={phoneRef} className="flex-1" />
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="1234567890"
+                            ref={phoneRef}
+                            className="flex-1"
+                          />
                         </div>
-                        <Button type="button" onClick={addPhone} variant="outline" size="icon" className="cursor-pointer">
+                        <Button
+                          type="button"
+                          onClick={addPhone}
+                          variant="outline"
+                          size="icon"
+                          className="cursor-pointer"
+                        >
                           <Plus className="h-4 w-4" />
                         </Button>
                       </div>
@@ -254,7 +322,11 @@ export default function ListerPage() {
                     {phones.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         {phones.map((phone, index) => (
-                          <Badge key={`phone-${index}`} variant="secondary" className="flex items-center gap-1">
+                          <Badge
+                            key={`phone-${index}`}
+                            variant="secondary"
+                            className="flex items-center gap-1"
+                          >
                             {phone}
                             <button
                               onClick={() => removePhone(index)}
@@ -279,7 +351,9 @@ export default function ListerPage() {
 
                   {/* Submit Button */}
                   <Button
-                    onClick={() => createWebsiteFn(websiteUrlRef.current?.value || "")}
+                    onClick={() =>
+                      createWebsiteFn(websiteUrlRef.current?.value || "")
+                    }
                     disabled={isSubmitting}
                     className="gap-2 w-full cursor-pointer"
                   >
@@ -290,7 +364,8 @@ export default function ListerPage() {
               </CardContent>
               <CardFooter className="flex flex-col items-start border-t bg-muted/50 px-6 py-4">
                 <p className="text-sm text-muted-foreground">
-                  By registering your website, you agree to our terms of service and privacy policy.
+                  By registering your website, you agree to our terms of service
+                  and privacy policy.
                 </p>
               </CardFooter>
             </Card>
@@ -361,5 +436,5 @@ export default function ListerPage() {
         </section>
       </main>
     </div>
-  )
+  );
 }
