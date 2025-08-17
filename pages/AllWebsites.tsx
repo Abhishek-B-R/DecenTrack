@@ -91,10 +91,10 @@ export default function AllWebsites() {
         // Get website balance
         const balance = await getWebsiteBalance(id);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ticks = recentTicks.map(
           (e: {
             validator: string;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             createdAt: any;
             status: number;
             latency: number;
