@@ -213,7 +213,7 @@ export default function AllTicks() {
         </div>
 
         {sortedTicks.length > 0 ? (
-          <table className="min-w-full dark:bg-cyan-900 bg-cyan-100 border border-gray-300 dark:border-gray-700 shadow-sm rounded-lg overflow-hidden">
+          <table className="min-w-full dark:bg-cyan-950 bg-cyan-50 border border-gray-300 dark:border-gray-700 shadow-sm rounded-lg overflow-hidden">
             <thead className="dark:bg-gray-800 bg-gray-200">
               <tr>
                 <th className="py-3 px-4 text-left border-b border-r border-gray-300 dark:border-gray-700 hidden lg:block">

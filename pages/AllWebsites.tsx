@@ -72,68 +72,117 @@ export default function AllWebsites() {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { getWebsite, getRecentTicks, getMyWebsites, getWebsiteBalance } =
     context;
+
+  // const fetchAllData = async () => {
+  //   try {
+  //     setRefreshing(true);
+  //     // Step 1: Get all website IDs
+  //     const websiteIdsTemp = await getMyWebsites();
+  //     const websiteIds = websiteIdsTemp.data;
+
+  //     // Step 2: For each ID, get website details and ticks
+  //     const websitePromises = websiteIds.map(async (id: string) => {
+  //       const websiteDetailsTemp = await getWebsite(id);
+  //       const websiteDetails = websiteDetailsTemp.data;
+  //       const recentTicksTemp = await getRecentTicks(id);
+  //       const recentTicks = recentTicksTemp.data;
+  //       // Get website balance
+  //       const balance = await getWebsiteBalance(id);
+
+  //       const ticks = recentTicks.map(
+  //         (e: {
+  //           validator: string;
+  //           // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //           createdAt: any;
+  //           status: number;
+  //           latency: number;
+  //         }) => {
+  //           let ts;
+  //           try {
+  //             const raw =
+  //               typeof e.createdAt === "bigint"
+  //                 ? Number(e.createdAt)
+  //                 : e.createdAt;
+  //             ts = typeof raw === "number" ? raw : Number.parseInt(raw);
+  //           } catch {
+  //             ts = e.createdAt;
+  //           }
+  //           return {
+  //             id: e.validator,
+  //             timestamp: ts,
+  //             status: e.status,
+  //             latency: e.latency,
+  //           };
+  //         }
+  //       );
+  //       console.log({
+  //         id,
+  //         name: websiteDetails[0],
+  //         disabled: websiteDetails[2],
+  //       });
+  //       return {
+  //         id,
+  //         name: websiteDetails[0],
+  //         disabled: websiteDetails[2],
+  //         balance: balance
+  //           ? ethers.formatEther(balance.data)
+  //           : ethers.formatEther("0"),
+  //         ...websiteDetails,
+  //         ticks,
+  //       };
+  //     });
+  //     // Wait for all promises to resolve
+  //     const websiteData = await Promise.all(websitePromises);
+  //     setWebsites(websiteData);
+  //   } catch (error) {
+  //     console.error("Error fetching website data:", error);
+  //   } finally {
+  //     setLoading(false);
+  //     setRefreshing(false);
+  //   }
+  // };
 
   const fetchAllData = async () => {
     try {
       setRefreshing(true);
-      // Step 1: Get all website IDs
-      const websiteIdsTemp = await getMyWebsites();
-      const websiteIds = websiteIdsTemp.data;
 
-      // Step 2: For each ID, get website details and ticks
-      const websitePromises = websiteIds.map(async (id: string) => {
-        const websiteDetailsTemp = await getWebsite(id);
-        const websiteDetails = websiteDetailsTemp.data;
+      // Step 1: Get all websites (already array from getMyWebsites)
+      const myWebsites = await getMyWebsites(); // returns [{id, url, contact_info, owner, active, ...}]
+
+      // Step 2: For each website, get ticks + balance
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const websitePromises = myWebsites.map(async (w: any) => {
+        const id = w.id;
+
+        // Get recent ticks
         const recentTicksTemp = await getRecentTicks(id);
-        const recentTicks = recentTicksTemp.data;
-        // Get website balance
-        const balance = await getWebsiteBalance(id);
+        const recentTicks = recentTicksTemp.data || [];
 
-        const ticks = recentTicks.map(
-          (e: {
-            validator: string;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            createdAt: any;
-            status: number;
-            latency: number;
-          }) => {
-            let ts;
-            try {
-              const raw =
-                typeof e.createdAt === "bigint"
-                  ? Number(e.createdAt)
-                  : e.createdAt;
-              ts = typeof raw === "number" ? raw : Number.parseInt(raw);
-            } catch {
-              ts = e.createdAt;
-            }
-            return {
-              id: e.validator,
-              timestamp: ts,
-              status: e.status,
-              latency: e.latency,
-            };
-          }
-        );
-        console.log({
-          id,
-          name: websiteDetails[0],
-          disabled: websiteDetails[2],
-        });
+        // Get website balance
+        const balanceRes = await getWebsiteBalance(id);
+
+        // Normalize ticks
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ticks = recentTicks.map((e: any) => ({
+          id: e.validator,
+          timestamp: e.createdAt, 
+          status: e.status,
+          latency: e.latency,
+          location: e.location || "N/A", 
+        }));
+
         return {
           id,
-          name: websiteDetails[0],
-          disabled: websiteDetails[2],
-          balance: balance
-            ? ethers.formatEther(balance.data)
-            : ethers.formatEther("0"),
-          ...websiteDetails,
+          name: w.url, // ✅ use url directly from /me/websites
+          disabled: w.active === false, // ✅ use active flag
+          balance: balanceRes ? ethers.formatEther(balanceRes.data) : "0",
           ticks,
         };
       });
-      // Wait for all promises to resolve
+
       const websiteData = await Promise.all(websitePromises);
       setWebsites(websiteData);
     } catch (error) {
@@ -143,7 +192,6 @@ export default function AllWebsites() {
       setRefreshing(false);
     }
   };
-
   // Function to format timestamp
   const formatTime = (timestamp: string) => {
     try {
@@ -223,7 +271,7 @@ export default function AllWebsites() {
         websites.map((website) => (
           <Card
             key={website.id}
-            className="w-full bg-gray-200 dark:bg-cyan-900"
+            className="w-full bg-gray-200 dark:bg-cyan-950"
           >
             <CardHeader className="flex flex-row items-start justify-between">
               <div>

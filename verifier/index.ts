@@ -37,9 +37,10 @@ const WebsiteMonitorSigned = WebsiteMonitor.connect(tempWallet) as any;
 // set an interval of 15 mins
 setInterval(async () => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [websiteIds, websiteDetails]: [
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       websiteIds: any[],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       websiteDetails: any[]
     ] = await WebsiteMonitorSigned.getAllWebsites();
     websiteIds.forEach(async (websiteId, index) => {
